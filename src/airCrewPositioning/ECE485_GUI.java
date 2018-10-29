@@ -5,12 +5,16 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
 
 public class ECE485_GUI {
     
     JFrame crewWindow = new JFrame("Crew Positions");
+    JPanel inWindow = new JPanel(new FlowLayout());
     JLayeredPane crewPane = new JLayeredPane();
+    JPanel legendPane = new JPanel();
     Grids grid;
+    Legend legend;
     
     //PARAMETERS
     static int[] TAGIDS = new int[] {101,102};	//List of RFID tag TDs being used
@@ -40,18 +44,32 @@ public class ECE485_GUI {
     		crewMembers.put(TAGIDS[k], new CrewMember(TAGIDS[k],0.0,0.0));
     	}
     	
-        crewWindow.getContentPane().add(crewPane, BorderLayout.CENTER);
+    	Point origin = new Point(10,10);
+    	Dimension paneSize = new Dimension(WIDTHFT*SIZERATIO, HEIGHTFT*SIZERATIO);
+    	
+    	crewWindow.setContentPane(inWindow);
+        crewWindow.getContentPane().add(crewPane);
+        crewWindow.getContentPane().add(legendPane);
+        crewWindow.getContentPane().setBackground(Color.black);
         crewPane.setBackground(Color.black);
-	    crewWindow.setSize(DISPLAYWIDTH,DISPLAYHEIGHT);
-	    crewWindow.setVisible(true);
-	    crewWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        legendPane.setBackground(Color.black);
+	    crewPane.setPreferredSize(paneSize);
+
+	    legendPane.setPreferredSize(paneSize);
 	    grid = new Grids(WIDTHFT*SIZERATIO, HEIGHTFT*SIZERATIO, ROWS, COLUMNS);
+	    legend = new Legend(WIDTHFT*SIZERATIO, HEIGHTFT*SIZERATIO);
 	    crewPane.add(grid, 1);
+	    legendPane.add(legend);
+	    crewWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    crewWindow.pack();
+	    crewWindow.setVisible(true);
 	    
 	    //Create new data save file
 	    createNewSaveFile();
 	    
 crewMembers.get(101).updateLocation(6.0, 6.0);
+legend.addNamePairing(101, "Joe");
+legend.repaint();
 while (true) {	    
 	    //Update Location
 	
@@ -66,7 +84,8 @@ while (true) {
 	        }
 	    }
 crewMembers.get(102).updateLocation(6.0, 8.0);	   
-crewMembers.get(101).updateLocation(2.0, 10.0);	  
+crewMembers.get(101).updateLocation(2.0, 10.0);
+legend.addNamePairing(102, "Bob");
 try {
 	TimeUnit.SECONDS.sleep(3);
 } catch (InterruptedException e) {

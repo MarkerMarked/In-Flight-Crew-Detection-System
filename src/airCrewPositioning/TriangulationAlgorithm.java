@@ -1,3 +1,4 @@
+package airCrewPositioning;
 
 public class TriangulationAlgorithm 
 {
@@ -24,8 +25,6 @@ public class TriangulationAlgorithm
 				//reader1.flag = 0;
 			
 			}
-			
-		
 	}
 	
 	public double xDistance(double rssi1, double rssi2 , double fixedDistance)
