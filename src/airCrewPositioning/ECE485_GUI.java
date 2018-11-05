@@ -1,6 +1,7 @@
 package airCrewPositioning;
 
 import java.awt.*;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
@@ -104,7 +105,14 @@ try {
     }
     
     private void createNewSaveFile() {
-    	
+    	try {
+
+    		  PrintStream out = new PrintStream(new FileOutputStream("output.txt"));
+    		System.setOut(out);
+    		}
+    		catch(IOException e1) {
+    		        System.out.println("Error during reading/writing");
+    		   }
     }
     
     private void saveCrewMemberLocation(CrewMember crew) {

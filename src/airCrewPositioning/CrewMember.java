@@ -28,6 +28,6 @@ public class CrewMember extends Canvas {
 	public void paint(Graphics g) {
 		g.setColor(Color.green);
 	    g.drawOval(0, 0, getSize().width-1, getSize().height-1);
-	    g.drawString(Integer.toString(identifier), getSize().width/2, getSize().height/2);
+	    g.drawString(Integer.toString(identifier), getSize().width/3, getSize().height*3/5);
 	}
 }

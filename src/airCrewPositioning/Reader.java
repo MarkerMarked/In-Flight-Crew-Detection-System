@@ -1,11 +1,23 @@
 package airCrewPositioning;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-
-
-
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
 public class Reader implements Runnable
 {
 // Program Variables ("instance variables")
@@ -27,7 +39,7 @@ public Reader(String ipAddress, int port) throws Exception // CONSTRUCTOR
     
   // First, a quick check of the parameters provided by our loading program:
   //new Reader(ipAddress, port);     
-	ip  = ipAddress;
+    ip  = ipAddress;
   System.out.println("Connecting to the Reader at " + ipAddress);
   s = new Socket(ipAddress, port);
   System.out.println("Connected to the reader!");
@@ -57,8 +69,8 @@ public void run() // ***RECEIVE***
         if(col == 12)
         {
           flag = 1;
-          System.out.println(receivedData);
-          System.out.println(ip);
+          //System.out.println(receivedData);
+          //System.out.println(ip);
           rssi[0] = receivedData[1];
           rssi[1] = receivedData[2];
           receivedDataString = String.valueOf(rssi);
@@ -72,14 +84,10 @@ public void run() // ***RECEIVE***
     
 } 
   
-		  catch (IOException e) 
-		  {
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
-		  }
+          catch (IOException e) 
+          {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
   }
-
-
-
-
 }
