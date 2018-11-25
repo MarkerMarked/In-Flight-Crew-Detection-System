@@ -16,7 +16,6 @@ public class Legend extends Canvas {
 	
 	public void paint (Graphics g) {
 		g.setColor(Color.green);
-		int size = legendList.size();
 		int offset = 50;
 		
 		for (Map.Entry<Integer, String> entry : legendList.entrySet()) {

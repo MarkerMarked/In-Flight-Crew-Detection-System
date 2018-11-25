@@ -3,7 +3,6 @@ package airCrewPositioning;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
-import java.util.concurrent.TimeUnit;
 import java.math.BigInteger;
 
 public class Reader implements Runnable {
@@ -12,7 +11,6 @@ public class Reader implements Runnable {
 	InputStream  ois;
 	double rssiValue1 = 0;
 	double rssiValue2 = 0;
-	private String ip;
 	int tagID = 0;
 	
 	private SynchDataPassthrough data;// = new SynchDataPassthrough();
@@ -22,7 +20,6 @@ public class Reader implements Runnable {
 	}
 	
 	public Reader(String ipAddress, int port, SynchDataPassthrough datathrough) throws Exception { // CONSTRUCTOR 
-		ip  = ipAddress;
 		System.out.println("Connecting to the Reader at " + ipAddress);
 		s = new Socket(ipAddress, port);
 		System.out.println("Connected to the reader!");
@@ -37,14 +34,11 @@ public class Reader implements Runnable {
 	  char[] receivedData = new char[12];    //If you handle larger data use a bigger buffer size
 	  String receivedDataString = null;
 	  
-	  char[] receivedData2 = new char[12];    //If you handle larger data use a bigger buffer size
 	  String receivedDataString2 = null;
 	  
 	  int col = 0;
 	  char[] rssi = new char[2]; 
 	  char[] activatorid1 = new char[2];
-	  char[] activatorid2 = new char[2];
-	  
 	  String tagIDString = null;
 	  char[] tagIDChar = new char[3];
 	  
@@ -77,13 +71,11 @@ public class Reader implements Runnable {
 				tagIDChar[1] = receivedData[4];
 				tagIDChar[2] = receivedData[5];
 				tagIDString = String.valueOf(tagIDChar);
-		//System.out.println("Hex: " + tagIDString);
+		
 				tagIDString = hexToBin(tagIDString);
 				tagIDString = String.format("%8s", tagIDString).replace(" ", "0");
 				tagID = Integer.parseInt(tagIDString,2);
-		//System.out.println("Dec: " + tagID);
-				
-				
+		
 				if(receivedDataInt2 == 2) {
 					rssiValue1 = receivedDataInt;
 				}
@@ -91,12 +83,9 @@ public class Reader implements Runnable {
 				if(receivedDataInt2 == 4) {
 					rssiValue2 = receivedDataInt;
 				}
-		//System.out.println("1: " + rssiValue1);
-		//System.out.println("2: " + rssiValue2);
 				
 				System.out.println("SEND");
 				data.send(new ReceivedDataPacket(tagID, rssiValue1, rssiValue2));
-				
 				col = 0;
 	        }
 	        
@@ -104,21 +93,11 @@ public class Reader implements Runnable {
 	  }
 	  
 	  catch (IOException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+		  e.printStackTrace();
 	  }
-	  }
+	}
 	
 	static String hexToBin(String s) {
 		  return new BigInteger(s, 16).toString(2);
 	}
-	
-	public synchronized void receiveNewReading() {
-		int Test;
-	}
-	
-	public synchronized void updateTagInfo() {
-		int Test;
-	}
-	
 }
