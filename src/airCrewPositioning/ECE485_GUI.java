@@ -1,6 +1,7 @@
 package airCrewPositioning;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +19,7 @@ public class ECE485_GUI {
     Legend legend;
     
     //PARAMETERS
-    static int[] TAGIDS = new int[] {101,102};	//List of RFID tag TDs being used
+    static int[] TAGIDS = new int[] {3584,3588};	//List of RFID tag TDs being used
     static int NUMBEROFTAGS = 2;		//Number of RFID tags being used
     
     static int HEIGHTFT = 30; 			// Height in Ft.
@@ -31,21 +32,28 @@ public class ECE485_GUI {
     static int GRIDWIDTH = WIDTHFT*SIZERATIO/COLUMNS;
     static int GRIDHEIGHT = HEIGHTFT*SIZERATIO/ROWS;
     
+    private SynchDataPassthrough data = new SynchDataPassthrough();
+   
     //Dictionary of Crew Member Tag IDs
     Map<Integer, CrewMember> crewMembers = new Hashtable<Integer, CrewMember>();
     
-    public static void main(String[] args) 
+    public static void main(String[] args) throws Exception 
     {
         ECE485_GUI crewPosition = new ECE485_GUI ();
     }
     
-    private ECE485_GUI() {
+    private ECE485_GUI() throws Exception{
+    	//Connect Readers
+    	Reader reader = new Reader("192.168.1.10", 10004, data);
+    	Thread t = new Thread(reader); // create a Thread  
+		t.start();
+    	
     	//Fill CrewMembers Dictionary with CM Objects
     	for (int k = 0; k < NUMBEROFTAGS; k++) {
     		crewMembers.put(TAGIDS[k], new CrewMember(TAGIDS[k],0.0,0.0));
     	}
     	
-    	Point origin = new Point(10,10);
+    	//Point origin = new Point(10,10);
     	Dimension paneSize = new Dimension(WIDTHFT*SIZERATIO, HEIGHTFT*SIZERATIO);
     	
     	crewWindow.setContentPane(inWindow);
@@ -68,14 +76,28 @@ public class ECE485_GUI {
 	    //Create new data save file
 	    createNewSaveFile();
 	    
-crewMembers.get(101).updateLocation(6.0, 6.0);
-legend.addNamePairing(101, "Joe");
-legend.repaint();
+	//Complete Tag and Name Pairings
+	legend.addNamePairing(3588, "Bob");
+	legend.addNamePairing(3584, "Joe");
+	
 while (true) {	    
 	    //Update Location
+		
+		ReceivedDataPacket packet = data.receive();
+		
+		System.out.println("ID: " + packet.tagID + " V1: " + packet.rssi1 + " V2: " + packet.rssi2);
 	
-
-	    
+		
+		double xDist = 4;
+		double hypo = Math.abs((packet.rssi1))-32;// + rssi2)/2 )-32;
+		double yDist = (Math.pow(Math.pow(hypo, 2) - Math.pow(xDist, 2), .5))/1.5;
+		
+		int ID = packet.tagID;
+		if(crewMembers.containsKey(ID)){
+			crewMembers.get(ID).updateLocation(distanceConversion(packet.rssi1, packet.rssi2));
+		}
+		
+		
 	    //Display and Save Crew Member Location
 	    for (int k = 0; k < NUMBEROFTAGS; k++) {
 	        if (crewMembers.get(TAGIDS[k]).needsDisplay) {
@@ -84,14 +106,7 @@ while (true) {
 	        	crewMembers.get(TAGIDS[k]).needsDisplay = false;
 	        }
 	    }
-crewMembers.get(102).updateLocation(6.0, 8.0);	   
-crewMembers.get(101).updateLocation(2.0, 10.0);
-legend.addNamePairing(102, "Bob");
-try {
-	TimeUnit.SECONDS.sleep(3);
-} catch (InterruptedException e) {
-	e.printStackTrace();
-}	    
+
 }
     }
 
@@ -108,7 +123,7 @@ try {
     	try {
 
     		  PrintStream out = new PrintStream(new FileOutputStream("output.txt"));
-    		System.setOut(out);
+    		//System.setOut(out);
     		}
     		catch(IOException e1) {
     		        System.out.println("Error during reading/writing");
@@ -118,5 +133,13 @@ try {
     private void saveCrewMemberLocation(CrewMember crew) {
     	
     }
-    
+ 
+    public Point2D.Double distanceConversion(double rssi1, double rssi2){
+		
+		double xDist = 4;
+		double hypo = Math.abs((rssi1 + rssi2)/2 )-32;
+		double yDist = (Math.pow(Math.pow(hypo, 2) - Math.pow(xDist, 2), .5))/1.5;
+		
+		return new Point2D.Double(xDist, yDist);
+	}
 }

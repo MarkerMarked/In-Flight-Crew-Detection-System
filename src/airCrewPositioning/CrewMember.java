@@ -4,6 +4,8 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.geom.Point2D;
 
 public class CrewMember extends Canvas {
 	int identifier;
@@ -19,12 +21,19 @@ public class CrewMember extends Canvas {
 	}
 
 	//Update current location (from top left corner in ft.)
-	public void updateLocation(double wFt, double hFt) {
-		widthFtLocation = wFt;
-		heightFtLocation = hFt;
+	public void updateLocation(Point2D.Double location) {
+		widthFtLocation = location.getX();
+		heightFtLocation = location.getY();
 		needsDisplay = true;
 	}
 	
+	
+	public void updateLocation(double x, double y) {
+		widthFtLocation = x;
+		heightFtLocation = y;
+		needsDisplay = true;
+	}
+
 	public void paint(Graphics g) {
 		g.setColor(Color.green);
 	    g.drawOval(0, 0, getSize().width-1, getSize().height-1);

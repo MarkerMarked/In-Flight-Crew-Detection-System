@@ -12,15 +12,15 @@ public class TriangulationAlgorithm
 	
 	public TriangulationAlgorithm(int numReaders) throws Exception
 	{
-		 Reader reader1 = new Reader("192.168.1.10", 10004);
-		 Reader reader2 = new Reader("192.168.1.11", 10001);
+		 Reader reader1 = new Reader("192.168.1.10", 10004, new SynchDataPassthrough());
+		 Reader reader2 = new Reader("192.168.1.11", 10001, new SynchDataPassthrough());
 			
 			//System.out.println(xDistanceFt + " " + yDistanceFt);
 			
 			while(true)
 			{
-				xDistanceFt = Math.abs(xDistance(reader1.rssiValue, reader2.rssiValue, 2));
-				yDistanceFt = Math.abs(yDistance(reader1.rssiValue, reader2.rssiValue, 2));
+				xDistanceFt = Math.abs(xDistance(reader1.rssiValue1, reader2.rssiValue2, 2));
+				yDistanceFt = Math.abs(yDistance(reader1.rssiValue1, reader2.rssiValue2, 2));
 				System.out.println(xDistanceFt + " " + yDistanceFt);
 				//reader1.flag = 0;
 			
