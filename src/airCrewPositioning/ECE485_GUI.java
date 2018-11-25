@@ -4,8 +4,6 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
@@ -13,9 +11,7 @@ import javax.swing.JPanel;
 public class ECE485_GUI {
 	//OPTIONS:
 	static boolean DATASAVEENABLE = true;			//DataSave - Enable to save data to file (or console in devmode)
-	static boolean DEVMODE = true;					//DevMode - Enable if running without a reader connection
-	
-	public boolean testing = true;
+	static boolean DEVMODE = false;					//DevMode - Enable if running without a reader connection
 	
     //PARAMETERS
     static int[] TAGIDS = new int[] {3584,3588};	//List of RFID tag TDs being used
@@ -84,6 +80,7 @@ public class ECE485_GUI {
 	    crewWindow.pack();
 	    crewWindow.setVisible(true);
 	    
+	    //Running Loop
 	    while (true) {
 		    //Update Location
 			if(DEVMODE == false) {
@@ -95,100 +92,7 @@ public class ECE485_GUI {
 					}
 				}
 			}
-			
-//TEST CODE ONLY******************************************************************************************************************************************************************************
-			if(testing) {
-				ReceivedDataPacket packet = new ReceivedDataPacket(3588, 9, 8);
-				if(crewMembers.containsKey(packet.tagID)){
-					packet = validityUpdate(packet);
-					if(packet.r1Ft != 0 && packet.r2Ft != 0) {
-						crewMembers.get(packet.tagID).updateLocation(locationCalculation(packet));
-					}
-				}
-				//Update and Save Crew Member Location
-			    for (int k = 0; k < NUMBEROFTAGS; k++) {
-			        if (crewMembers.get(TAGIDS[k]).needsDisplay) {
-			        	displayCrewMember(crewMembers.get(TAGIDS[k]));
-			        	saveCrewMemberLocation(crewMembers.get(TAGIDS[k]));
-			        	crewMembers.get(TAGIDS[k]).needsDisplay = false;
-			        }
-			    }
-				
-				TimeUnit.SECONDS.sleep(1);
-				
-				packet = new ReceivedDataPacket(3584, 9, 10);
-				if(crewMembers.containsKey(packet.tagID)){
-					packet = validityUpdate(packet);
-					if(packet.r1Ft != 0 && packet.r2Ft != 0) {
-						crewMembers.get(packet.tagID).updateLocation(locationCalculation(packet));
-					}
-				}
-				//Update and Save Crew Member Location
-			    for (int k = 0; k < NUMBEROFTAGS; k++) {
-			        if (crewMembers.get(TAGIDS[k]).needsDisplay) {
-			        	displayCrewMember(crewMembers.get(TAGIDS[k]));
-			        	saveCrewMemberLocation(crewMembers.get(TAGIDS[k]));
-			        	crewMembers.get(TAGIDS[k]).needsDisplay = false;
-			        }
-			    }
-				
-				TimeUnit.SECONDS.sleep(1);
-				
-				packet = new ReceivedDataPacket(3588, 7, 2);
-				if(crewMembers.containsKey(packet.tagID)){
-					packet = validityUpdate(packet);
-					if(packet.r1Ft != 0 && packet.r2Ft != 0) {
-						crewMembers.get(packet.tagID).updateLocation(locationCalculation(packet));
-					}
-				}
-				//Update and Save Crew Member Location
-			    for (int k = 0; k < NUMBEROFTAGS; k++) {
-			        if (crewMembers.get(TAGIDS[k]).needsDisplay) {
-			        	displayCrewMember(crewMembers.get(TAGIDS[k]));
-			        	saveCrewMemberLocation(crewMembers.get(TAGIDS[k]));
-			        	crewMembers.get(TAGIDS[k]).needsDisplay = false;
-			        }
-			    }
-				
-				TimeUnit.SECONDS.sleep(1);
-				
-				packet = new ReceivedDataPacket(3584, 5, 4);
-				if(crewMembers.containsKey(packet.tagID)){
-					packet = validityUpdate(packet);
-					if(packet.r1Ft != 0 && packet.r2Ft != 0) {
-						crewMembers.get(packet.tagID).updateLocation(locationCalculation(packet));
-					}
-				}
-				//Update and Save Crew Member Location
-			    for (int k = 0; k < NUMBEROFTAGS; k++) {
-			        if (crewMembers.get(TAGIDS[k]).needsDisplay) {
-			        	displayCrewMember(crewMembers.get(TAGIDS[k]));
-			        	saveCrewMemberLocation(crewMembers.get(TAGIDS[k]));
-			        	crewMembers.get(TAGIDS[k]).needsDisplay = false;
-			        }
-			    }
-				
-				TimeUnit.SECONDS.sleep(1);
-				
-				packet = new ReceivedDataPacket(3588, 11, 11);
-				if(crewMembers.containsKey(packet.tagID)){
-					packet = validityUpdate(packet);
-					if(packet.r1Ft != 0 && packet.r2Ft != 0) {
-						crewMembers.get(packet.tagID).updateLocation(locationCalculation(packet));
-					}
-				}
-				//Update and Save Crew Member Location
-			    for (int k = 0; k < NUMBEROFTAGS; k++) {
-			        if (crewMembers.get(TAGIDS[k]).needsDisplay) {
-			        	displayCrewMember(crewMembers.get(TAGIDS[k]));
-			        	saveCrewMemberLocation(crewMembers.get(TAGIDS[k]));
-			        	crewMembers.get(TAGIDS[k]).needsDisplay = false;
-			        }
-			    }
-				testing = false;
-			}
-//END TEST CODE*******************************************************************************************************************************************************************************
-			
+
 		    //Update and Save Crew Member Location
 		    for (int k = 0; k < NUMBEROFTAGS; k++) {
 		        if (crewMembers.get(TAGIDS[k]).needsDisplay) {
@@ -205,6 +109,7 @@ public class ECE485_GUI {
     	int convertedWidthLoc = (int) (crew.widthFtLocation * SIZERATIO) - CREWWIDTH/2;
     	int convertedHeightLoc = (int) (crew.heightFtLocation * SIZERATIO) - CREWHEIGHT/2;
     	
+    	//Ensure crew is drawn inside the "aircraft"
     	if(convertedWidthLoc < 0) {
     		convertedWidthLoc = 0;
     	} else if(convertedWidthLoc > (DISPLAYWIDTH - CREWWIDTH)){

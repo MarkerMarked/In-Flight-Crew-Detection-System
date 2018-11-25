@@ -23,8 +23,6 @@ public class Legend extends Canvas {
 			g.drawString(text, this.getX(), this.getY()+offset);
 			offset += 30;
 		}
-		
-		
 	}
 	
 	public void addNamePairing (int id, String name) {

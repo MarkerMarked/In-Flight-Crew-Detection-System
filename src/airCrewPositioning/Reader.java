@@ -25,9 +25,6 @@ public class Reader implements Runnable {
 		System.out.println("Connected to the reader!");
 		ois = (s.getInputStream()); // use for receiving
 		data = datathrough;
-		//Thread t = new Thread(this); // create a Thread  
-		//t.start();     
-	  
 	}
 	
 	public void run() { // ***RECEIVE***
@@ -90,9 +87,7 @@ public class Reader implements Runnable {
 	        }
 	        
 	      }
-	  }
-	  
-	  catch (IOException e) {
+	  } catch (IOException e) {
 		  e.printStackTrace();
 	  }
 	}

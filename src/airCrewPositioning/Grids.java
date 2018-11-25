@@ -25,12 +25,12 @@ class Grids extends Canvas {
 	    //Draw horizontal lines
 	    int heigtOfRow = height / rows;
 	    for (k = 1; k <= rows; k++)
-	      g.drawLine(0, k*heigtOfRow , width, k*heigtOfRow);
+	    	g.drawLine(0, k*heigtOfRow , width, k*heigtOfRow);
 	    
 	    //Draw vertical lines
 	    int widthOfRow = width / columns;
 	    for (k = 1; k < columns; k++)
-	      g.drawLine(k*widthOfRow , 0, k*widthOfRow , height);
+	    	g.drawLine(k*widthOfRow , 0, k*widthOfRow , height);
 	}
 	
 }
