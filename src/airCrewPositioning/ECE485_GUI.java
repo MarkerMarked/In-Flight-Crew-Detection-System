@@ -4,14 +4,18 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
 public class ECE485_GUI {
 	//OPTIONS:
-	static boolean DATASAVEENABLE = true;
-	static boolean DEVMODE = true;
+	static boolean DATASAVEENABLE = true;			//DataSave - Enable to save data to file (or console in devmode)
+	static boolean DEVMODE = true;					//DevMode - Enable if running without a reader connection
+	
+	public boolean testing = true;
 	
     //PARAMETERS
     static int[] TAGIDS = new int[] {3584,3588};	//List of RFID tag TDs being used
@@ -25,6 +29,8 @@ public class ECE485_GUI {
     static int DISPLAYWIDTH = 600;					// Display Window Width
     static int GRIDWIDTH = WIDTHFT*SIZERATIO/COLUMNS;
     static int GRIDHEIGHT = HEIGHTFT*SIZERATIO/ROWS;
+    static int CREWHEIGHT = GRIDHEIGHT - (GRIDHEIGHT/6);
+    static int CREWWIDTH = GRIDWIDTH - (GRIDWIDTH/6);
     
     Map<Integer, CrewMember> crewMembers = new Hashtable<Integer, CrewMember>();
     private SynchDataPassthrough data = new SynchDataPassthrough();
@@ -78,17 +84,112 @@ public class ECE485_GUI {
 	    crewWindow.pack();
 	    crewWindow.setVisible(true);
 	    
-	    while (true) {	    
+	    while (true) {
 		    //Update Location
 			if(DEVMODE == false) {
 		    	ReceivedDataPacket packet = data.receive();
-				
-				int ID = packet.tagID;
-				if(crewMembers.containsKey(ID)){
-					crewMembers.get(ID).updateLocation(distanceConversion(packet.rssi1, packet.rssi2));
+				if(crewMembers.containsKey(packet.tagID)){
+					packet = validityUpdate(packet);
+					if(packet.r1Ft != 0 && packet.r2Ft != 0) {
+						crewMembers.get(packet.tagID).updateLocation(locationCalculation(packet));
+					}
 				}
 			}
-		    //Display and Save Crew Member Location
+			
+//TEST CODE ONLY******************************************************************************************************************************************************************************
+			if(testing) {
+				ReceivedDataPacket packet = new ReceivedDataPacket(3588, 9, 8);
+				if(crewMembers.containsKey(packet.tagID)){
+					packet = validityUpdate(packet);
+					if(packet.r1Ft != 0 && packet.r2Ft != 0) {
+						crewMembers.get(packet.tagID).updateLocation(locationCalculation(packet));
+					}
+				}
+				//Update and Save Crew Member Location
+			    for (int k = 0; k < NUMBEROFTAGS; k++) {
+			        if (crewMembers.get(TAGIDS[k]).needsDisplay) {
+			        	displayCrewMember(crewMembers.get(TAGIDS[k]));
+			        	saveCrewMemberLocation(crewMembers.get(TAGIDS[k]));
+			        	crewMembers.get(TAGIDS[k]).needsDisplay = false;
+			        }
+			    }
+				
+				TimeUnit.SECONDS.sleep(1);
+				
+				packet = new ReceivedDataPacket(3584, 9, 10);
+				if(crewMembers.containsKey(packet.tagID)){
+					packet = validityUpdate(packet);
+					if(packet.r1Ft != 0 && packet.r2Ft != 0) {
+						crewMembers.get(packet.tagID).updateLocation(locationCalculation(packet));
+					}
+				}
+				//Update and Save Crew Member Location
+			    for (int k = 0; k < NUMBEROFTAGS; k++) {
+			        if (crewMembers.get(TAGIDS[k]).needsDisplay) {
+			        	displayCrewMember(crewMembers.get(TAGIDS[k]));
+			        	saveCrewMemberLocation(crewMembers.get(TAGIDS[k]));
+			        	crewMembers.get(TAGIDS[k]).needsDisplay = false;
+			        }
+			    }
+				
+				TimeUnit.SECONDS.sleep(1);
+				
+				packet = new ReceivedDataPacket(3588, 7, 2);
+				if(crewMembers.containsKey(packet.tagID)){
+					packet = validityUpdate(packet);
+					if(packet.r1Ft != 0 && packet.r2Ft != 0) {
+						crewMembers.get(packet.tagID).updateLocation(locationCalculation(packet));
+					}
+				}
+				//Update and Save Crew Member Location
+			    for (int k = 0; k < NUMBEROFTAGS; k++) {
+			        if (crewMembers.get(TAGIDS[k]).needsDisplay) {
+			        	displayCrewMember(crewMembers.get(TAGIDS[k]));
+			        	saveCrewMemberLocation(crewMembers.get(TAGIDS[k]));
+			        	crewMembers.get(TAGIDS[k]).needsDisplay = false;
+			        }
+			    }
+				
+				TimeUnit.SECONDS.sleep(1);
+				
+				packet = new ReceivedDataPacket(3584, 5, 4);
+				if(crewMembers.containsKey(packet.tagID)){
+					packet = validityUpdate(packet);
+					if(packet.r1Ft != 0 && packet.r2Ft != 0) {
+						crewMembers.get(packet.tagID).updateLocation(locationCalculation(packet));
+					}
+				}
+				//Update and Save Crew Member Location
+			    for (int k = 0; k < NUMBEROFTAGS; k++) {
+			        if (crewMembers.get(TAGIDS[k]).needsDisplay) {
+			        	displayCrewMember(crewMembers.get(TAGIDS[k]));
+			        	saveCrewMemberLocation(crewMembers.get(TAGIDS[k]));
+			        	crewMembers.get(TAGIDS[k]).needsDisplay = false;
+			        }
+			    }
+				
+				TimeUnit.SECONDS.sleep(1);
+				
+				packet = new ReceivedDataPacket(3588, 11, 11);
+				if(crewMembers.containsKey(packet.tagID)){
+					packet = validityUpdate(packet);
+					if(packet.r1Ft != 0 && packet.r2Ft != 0) {
+						crewMembers.get(packet.tagID).updateLocation(locationCalculation(packet));
+					}
+				}
+				//Update and Save Crew Member Location
+			    for (int k = 0; k < NUMBEROFTAGS; k++) {
+			        if (crewMembers.get(TAGIDS[k]).needsDisplay) {
+			        	displayCrewMember(crewMembers.get(TAGIDS[k]));
+			        	saveCrewMemberLocation(crewMembers.get(TAGIDS[k]));
+			        	crewMembers.get(TAGIDS[k]).needsDisplay = false;
+			        }
+			    }
+				testing = false;
+			}
+//END TEST CODE*******************************************************************************************************************************************************************************
+			
+		    //Update and Save Crew Member Location
 		    for (int k = 0; k < NUMBEROFTAGS; k++) {
 		        if (crewMembers.get(TAGIDS[k]).needsDisplay) {
 		        	displayCrewMember(crewMembers.get(TAGIDS[k]));
@@ -99,10 +200,22 @@ public class ECE485_GUI {
 	    }
 	}
 
-    private void displayCrewMember(CrewMember crew) {
-    	int convertedWidthLoc = (int) (crew.widthFtLocation * SIZERATIO);
-    	int convertedHeightLoc = (int) (crew.heightFtLocation * SIZERATIO);
-    	crew.setSize(GRIDWIDTH - (GRIDWIDTH/6), GRIDHEIGHT - (GRIDHEIGHT/6));
+	private void displayCrewMember(CrewMember crew) {
+		crew.setSize(CREWWIDTH, CREWHEIGHT);
+    	int convertedWidthLoc = (int) (crew.widthFtLocation * SIZERATIO) - CREWWIDTH/2;
+    	int convertedHeightLoc = (int) (crew.heightFtLocation * SIZERATIO) - CREWHEIGHT/2;
+    	
+    	if(convertedWidthLoc < 0) {
+    		convertedWidthLoc = 0;
+    	} else if(convertedWidthLoc > (DISPLAYWIDTH - CREWWIDTH)){
+    		convertedWidthLoc = DISPLAYWIDTH - CREWWIDTH;
+    	}
+    	if(convertedHeightLoc < 0) {
+    		convertedHeightLoc = 0;
+    	} else if(convertedHeightLoc > (DISPLAYHEIGHT - CREWHEIGHT - (GRIDWIDTH/12))){
+    		convertedHeightLoc = DISPLAYHEIGHT - CREWHEIGHT - (GRIDWIDTH/12);
+    	}
+    	
     	crew.setLocation(convertedWidthLoc + (GRIDWIDTH/12), convertedHeightLoc + (GRIDHEIGHT/12));
     	crewPane.add(crew, 0);
     }
@@ -113,8 +226,7 @@ public class ECE485_GUI {
     		if(DEVMODE == false) {
     			System.setOut(out);
     		}
-    	}
-    	catch(IOException e1) {
+    	} catch(IOException e1) {
     		System.out.println("Error during file creation");
     	}
     }
@@ -125,10 +237,30 @@ public class ECE485_GUI {
     	}
     }
  
-    public Point2D.Double distanceConversion(double rssi1, double rssi2){
-		double xDist = 4;
-		double hypo = Math.abs((rssi1 + rssi2)/2 )-32;
-		double yDist = (Math.pow(Math.pow(hypo, 2) - Math.pow(xDist, 2), .5))/1.5;
-		return new Point2D.Double(xDist, yDist);
+    //Method checks to see if RSSI lengths are valid.
+    //If they are, RSSI values are converted to Ft, and stored in packet. 
+    //If they are not, they are fixed. If they can't be fixed, Ft values are left blank (0) and location is not updated.
+    public ReceivedDataPacket validityUpdate(ReceivedDataPacket packet) {
+    	boolean valid = true;
+    	
+    	//Add Checks Here
+    	
+    	if(valid) {
+    		//Change RSSI to FT According to Experimental Curve
+        	packet.r1Ft = packet.r1; //TEMP
+        	packet.r2Ft = packet.r2; //TEMP
+        	return packet;
+    	} else {
+    		//Return unmodified packet (Ft = 0)
+    		return packet;
+    	}
+    	
+    }
+    
+    public Point2D.Double locationCalculation(ReceivedDataPacket packet){
+		//Calculate X & Y Location
+    	double x = (Math.pow(packet.r1Ft, 2) - Math.pow(packet.r2Ft, 2) + 64)/16;
+		double y = Math.sqrt((Math.pow(packet.r1Ft, 2) - Math.pow(x, 2)));
+		return new Point2D.Double(x, y);
 	}
 }

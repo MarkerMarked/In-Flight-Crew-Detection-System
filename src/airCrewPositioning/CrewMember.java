@@ -25,7 +25,6 @@ public class CrewMember extends Canvas {
 		needsDisplay = true;
 	}
 	
-	
 	public void updateLocation(double x, double y) {
 		widthFtLocation = x;
 		heightFtLocation = y;
