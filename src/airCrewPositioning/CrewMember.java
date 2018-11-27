@@ -31,6 +31,14 @@ public class CrewMember extends Canvas {
 		needsDisplay = true;
 	}
 
+	public void updateLocation(ReceivedDataPacket packet) {
+		if (packet.valid) {
+			widthFtLocation = packet.r1Ft;
+			heightFtLocation = packet.r2Ft;
+			needsDisplay = true;
+		}
+	}
+	
 	public void paint(Graphics g) {
 		g.setColor(Color.green);
 	    g.drawOval(0, 0, getSize().width-1, getSize().height-1);

@@ -86,10 +86,7 @@ public class ECE485_GUI {
 			if(DEVMODE == false) {
 		    	ReceivedDataPacket packet = data.receive();
 				if(crewMembers.containsKey(packet.tagID)){
-					packet = validityUpdate(packet);
-					if(packet.r1Ft != 0 && packet.r2Ft != 0) {
-						crewMembers.get(packet.tagID).updateLocation(locationCalculation(packet));
-					}
+					crewMembers.get(packet.tagID).updateLocation(locationCalculation(packet));
 				}
 			}
 
@@ -141,31 +138,36 @@ public class ECE485_GUI {
     		System.out.println("ID: " + crew.identifier + " X(WDTH): " + crew.widthFtLocation + " Y(HGHT): " + crew.heightFtLocation);
     	}
     }
- 
-    //Method checks to see if RSSI lengths are valid.
-    //If they are, RSSI values are converted to Ft, and stored in packet. 
-    //If they are not, they are fixed. If they can't be fixed, Ft values are left blank (0) and location is not updated.
-    public ReceivedDataPacket validityUpdate(ReceivedDataPacket packet) {
-    	boolean valid = true;
-    	
-    	//Add Checks Here
-    	
-    	if(valid) {
-    		//Change RSSI to FT According to Experimental Curve
-        	packet.r1Ft = packet.r1; //TEMP
-        	packet.r2Ft = packet.r2; //TEMP
-        	return packet;
-    	} else {
-    		//Return unmodified packet (Ft = 0)
-    		return packet;
-    	}
-    	
-    }
     
-    public Point2D.Double locationCalculation(ReceivedDataPacket packet){
-		//Calculate X & Y Location
+    //Method checks to see if RSSI lengths are valid.
+    //If they are, RSSI values are converted to Ft, and stored in packet.
+    //If they are not, they are fixed. If they can't be fixed, valid flag is set to false and location is not updated.
+    public ReceivedDataPacket locationCalculation(ReceivedDataPacket packet) {
+    	packet.valid = true; //Set packet validity to true, if any part fails, set it to false and it will not be updated.
+    	
+    	packet.r1Ft = (packet.r1-30.5)/-1.2; //TEMP
+        packet.r2Ft = (packet.r2-30.5)/-1.2; //TEMP
+		
+        if(packet.r1Ft+packet.r2Ft < 8) {
+        	if (packet.r1Ft < packet.r2Ft) {
+        		packet.r1Ft = 8 - packet.r2Ft;
+        	}else {
+        		packet.r2Ft = 8 - packet.r1Ft;
+        	}
+        }
+        
+        //Calculate X & Y Location
     	double x = (Math.pow(packet.r1Ft, 2) - Math.pow(packet.r2Ft, 2) + 64)/16;
 		double y = Math.sqrt((Math.pow(packet.r1Ft, 2) - Math.pow(x, 2)));
-		return new Point2D.Double(x, y);
+		
+		packet.r1Ft = x;
+		packet.r2Ft = y;
+		
+		if(packet.r1Ft >= 0 && packet.r2Ft >= 0) {
+			System.out.println("Negative Location Value Found");
+			//May need to add code here to fix the "third case" where one R is too large, and the other R is too small they intersect outside the aircraft.
+		}
+		
+		return packet;
 	}
 }

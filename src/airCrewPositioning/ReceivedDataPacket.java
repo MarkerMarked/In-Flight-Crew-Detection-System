@@ -6,6 +6,7 @@ public class ReceivedDataPacket {
 	public double r2;
 	public double r1Ft;
 	public double r2Ft;
+	public boolean valid = false;
 	
     public ReceivedDataPacket(int ID, double rssi1, double rssi2) {
     	tagID = ID;
